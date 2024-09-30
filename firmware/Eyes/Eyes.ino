@@ -345,29 +345,27 @@ MyColor  vava4[] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0
 
 
 void setup() { 
-    // Uncomment/edit one of the following lines for your leds arrangement.
-    // ## Clockless types ##
     Serial.begin(115200);
     FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
     FastLED.setBrightness(25);
     Serial.println("Лента стартовала!");
 
-    draw ( sleep );
-    delay(3000);
+    draw ( sleep , 3000); // отобразить спящие закрытые глаза на 3 секунды
 
 
 }
 
 
 
-void draw( MyColor arData[] )
+void draw( MyColor arData[] , int image_delay )
   {
-          for(int i=0; i<255;i++)
+          for(int i=0; i<NUM_LEDS-1;i++)
             {
                 leds[i].setRGB( arData[i].red , arData[i].green , arData[i].blue );
                 Serial.println(i);
             }
           FastLED.show();
+          delay( image_delay );
   }
 
 
@@ -375,63 +373,41 @@ void draw( MyColor arData[] )
 void loop() { 
 
 
-  draw ( middle );
-  delay(5000);
+  draw ( middle , 5000 ); // отобразить глаза в центре, 
+  draw ( sleep  , 250);
+  draw ( middle , 500 );
+  draw ( sleep  , 250);
+  draw ( middle , 500);
 
-  draw ( sleep );
-  delay(250);
-  draw ( middle );
-  delay(500);
-  draw ( sleep );
-  delay(250);
-  draw ( middle );
-  delay(500);
+  draw ( big    , 1000);  // большие удивлённые глаза, 1 секунда
 
-  draw ( big );
-  delay(1000);
+  draw ( middle , 500);
+  draw ( left   , 500);
+  draw ( middle , 500);
+  draw ( left   , 500);
+  draw ( middle , 2000);
 
-  draw ( middle );
-  delay(500);
-  draw ( left );
-  delay(500);
-  draw ( middle );
-  delay(500);
-  draw ( left );
-  delay(500);
-  draw ( middle );
-  delay(2000);
+  draw ( niz    , 1500);  // зрачки вниз, сведены к носу
 
-  draw ( niz );
-  delay(1500);
+  draw ( left , 500);
 
-  draw ( left );
-  delay(500);
-
-  draw ( middle );
-  delay(1500);
+  draw ( middle , 1500);
 
 
   for(int i=0; i<7;i++)
     {
-        draw ( sleep );
-        delay(20);
-        draw ( middle );
-        delay(100);
+        draw ( sleep , 20);
+        draw ( middle , 100);
     }
-  delay(1000);
 
+  draw ( vava1 , 1000);
+  draw ( vava2 , 1000);
+  draw ( vava3 , 1000 );
+  draw ( vava4 , 1000 );
 
-  draw ( vava1 );
-  delay(4000);
-
-  draw ( vava2 );
-  delay(4000);
-  draw ( vava3 );
-  delay(4000);
-  draw ( vava4 );
-  delay(4000);
-
-
-
+  draw ( vava1 , 1000);
+  draw ( vava2 , 1000);
+  draw ( vava3 , 1000 );
+  draw ( vava4 , 1000 );
 
 }
