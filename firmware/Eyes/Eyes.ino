@@ -11,7 +11,7 @@
 CRGB leds[NUM_LEDS];
 GyverHub hub;
 
-
+static byte brightness=25;
 
 struct MyColor {
   byte red;
@@ -27,16 +27,21 @@ struct MyColor {
 void build(gh::Builder& b) {
 
     b.Title_("header1", "Состояние:");
-
+    if (b.beginRow()) {
+       if (b.Slider(&brightness).label("Яркость").size(3).click()) {
+            Serial.print("Яркость: ");
+            Serial.println(brightness);
+            hub.sendGet("Brightness",  brightness);
+            hub.sendStatus("online");
+            FastLED.setBrightness(brightness);
+       };
+        }
+    b.endRow();
+    
     b.beginRow();
-    gh::Canvas cv1;
-    b.BeginCanvas(32, 8, &cv1);
-    for (int x=1; x<32; x++)
-      {
-        cv1.point(x , 1);
-        cv1.point(x , 8);
-      }
-    b.EndCanvas();
+        gh::Canvas cv1;
+        b.BeginCanvas(32, 8, &cv1);
+        b.EndCanvas();
     b.endRow();
 
 
@@ -59,12 +64,10 @@ void setup() {
     WiFi.softAP("Car-Eyes","11111111");  
 
     FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
-    FastLED.setBrightness(25);
+    FastLED.setBrightness(brightness);
     Serial.println("Лента стартовала!");
 
     draw ( sleep , 2000); // отобразить спящие закрытые глаза на 3 секунды
-
-
 }
 
 
@@ -77,12 +80,38 @@ void draw( MyColor arData[] , int image_delay )
               leds[i].setRGB( arData[i].red , arData[i].green , arData[i].blue );
           }
         FastLED.show();
-
+        Serial.println( image_delay );
         while ( millis() < end_time )
             {
                   hub.tick();                  
             }
+
+        gh::CanvasUpdate cv1("cv1", &hub);   
+        //cv1.clear();
+        cv1.fill(gh::Color(0, 0, 0, random(100, 255)));
+        cv1.background();
+         
+        for (int x=0; x<30; x++)
+          {
+            for (int y=0; y<7; y++)
+                {
+                    int number = ( x*8 ) + y ;
+                    byte average = (  arData[ number ].red + arData[ number ].green + arData[ number ].blue )/3 ;
+                    //Serial.print( average );
+                    //Serial.print( ", ");
+
+                    if ( average > 128  )
+                          {
+                              cv1.fill(   gh::Color(random(255), random(255), random(255))    );
+                              cv1.point( x , y );
+                          }
+                }                
+            //Serial.println();    
+          }
+        cv1.send();
   }
+
+
 
 
 
